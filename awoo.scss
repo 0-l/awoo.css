@@ -1,0 +1,137 @@
+/*
+
+Awoo.css
+
+Small responsive CSS boilerplate based on grids.
+Author: https://github.com/0-l
+
+*/
+@charset "UTF-8";
+
+@import url('https://fonts.googleapis.com/css?family=Roboto:300,400,500,700');
+
+$cols: col !default;
+$rows: row !default;
+$colors: aliceblue antiquewhite aqua aquamarine azure beige bisque black blanchedalmond blue blueviolet brown burlywood cadetblue chartreuse chocolate coral cornflowerblue cornsilk crimson cyan darkblue darkcyan darkgoldenrod darkgray darkgrey darkgreen darkkhaki darkmagenta darkolivegreen darkorange darkorchid darkred darksalmon darkseagreen darkslateblue darkslategray darkslategrey darkturquoise darkviolet deeppink deepskyblue dimgray dimgrey dodgerblue firebrick floralwhite forestgreen fuchsia gainsboro ghostwhite gold goldenrod gray grey green greenyellow honeydew hotpink indianred  indigo   ivory khaki lavender lavenderblush lawngreen lemonchiffon lightblue lightcoral lightcyan lightgoldenrodyellow lightgray lightgrey lightgreen lightpink lightsalmon lightseagreen lightskyblue lightslategray lightslategrey lightsteelblue lightyellow lime limegreen linen magenta maroon mediumaquamarine mediumblue mediumorchid mediumpurple mediumseagreen mediumslateblue mediumspringgreen mediumturquoise mediumvioletred midnightblue mintcream mistyrose moccasin navajowhite navy oldlace olive olivedrab orange orangered orchid palegoldenrod palegreen paleturquoise palevioletred papayawhip peachpuff peru pink plum powderblue purple rebeccapurple red rosybrown royalblue saddlebrown salmon sandybrown seagreen seashell sienna silver skyblue slateblue slategray slategrey snow springgreen steelblue tan teal thistle tomato turquoise violet wheat white whitesmoke yellow yellowgreen !default;
+
+@each $color in $colors {
+    .color-#{"" + $color} {
+        color: $color;
+    }
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    outline: 0;
+}
+
+h1,h2,h3,h4,h5,h6,p,span {
+    font-family: 'Roboto', sans-serif;
+}
+
+%center {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.center { @extend %center; }
+
+[class^='\21'] {
+    position: absolute;
+}
+
+@mixin layout($size) {
+    @for $i from 1 through $size {
+        .col-#{$i} {
+            --col: #{$i};
+        }
+        .row-#{$i} {
+            --row: #{$i};
+        }
+    }
+
+    .cols {
+        grid-template-columns: repeat($size, auto);
+        width: 100%;
+    }
+
+    .rows {
+        grid-template-rows: repeat($size, auto);
+        height: 100%;
+    }
+
+    @for $num from 1 through $size {
+        @for $i from 2 through $size {
+            @if $num != $i {
+                .cols .col-#{$num}.col-#{$i} {
+                    --col: 1 / calc(1 + #{$i});
+                }
+
+                .cols .col-#{$num}.col-end {
+                    --col: calc((#{$num} - #{$size}) + #{$size}) / calc(#{$size} + 1);
+                }
+            }
+        }
+    }
+
+    .col-end {
+        --col: #{$size};
+    }
+}
+
+@media screen and (max-width: 700px) {
+    @include layout($size: 6);
+}
+
+@media screen and (min-width: 700px) {
+    @include layout($size: 12);
+}
+
+.cols, .rows {
+    display: grid;
+}
+
+[class*='col-'] {
+    grid-column: var(--col);
+}
+
+[class*='row-'] {
+    grid-row: var(--row);
+}
+
+%button {
+    --size: .5em 1em;
+    @extend %center;
+
+    padding: var(--size);
+    outline: 0;
+    border: 0;
+    text-transform: uppercase;
+    color: #000;
+    background: #fff;
+    border-radius: 2px;
+    font: 500 10px 'Roboto', sans-serif;
+    letter-spacing: .5px;
+    cursor: pointer;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, .1);
+
+    &:hover {
+        opacity: .8;
+    }
+}
+
+.button-sm {
+    @extend %button;
+}
+
+.button-md {
+    --size: 1em 2em;
+    @extend %button;
+}
+
+.button-lg {
+    --size: 1em 5em;
+    @extend %button;
+}
