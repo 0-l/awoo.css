@@ -12,35 +12,64 @@ Author: https://github.com/0-l
 
 $cols: col !default;
 $rows: row !default;
-$colors: aliceblue antiquewhite aqua aquamarine azure beige bisque black blanchedalmond blue blueviolet brown burlywood cadetblue chartreuse chocolate coral cornflowerblue cornsilk crimson cyan darkblue darkcyan darkgoldenrod darkgray darkgrey darkgreen darkkhaki darkmagenta darkolivegreen darkorange darkorchid darkred darksalmon darkseagreen darkslateblue darkslategray darkslategrey darkturquoise darkviolet deeppink deepskyblue dimgray dimgrey dodgerblue firebrick floralwhite forestgreen fuchsia gainsboro ghostwhite gold goldenrod gray grey green greenyellow honeydew hotpink indianred  indigo   ivory khaki lavender lavenderblush lawngreen lemonchiffon lightblue lightcoral lightcyan lightgoldenrodyellow lightgray lightgrey lightgreen lightpink lightsalmon lightseagreen lightskyblue lightslategray lightslategrey lightsteelblue lightyellow lime limegreen linen magenta maroon mediumaquamarine mediumblue mediumorchid mediumpurple mediumseagreen mediumslateblue mediumspringgreen mediumturquoise mediumvioletred midnightblue mintcream mistyrose moccasin navajowhite navy oldlace olive olivedrab orange orangered orchid palegoldenrod palegreen paleturquoise palevioletred papayawhip peachpuff peru pink plum powderblue purple rebeccapurple red rosybrown royalblue saddlebrown salmon sandybrown seagreen seashell sienna silver skyblue slateblue slategray slategrey snow springgreen steelblue tan teal thistle tomato turquoise violet wheat white whitesmoke yellow yellowgreen !default;
-
-@each $color in $colors {
-    .color-#{"" + $color} {
-        color: $color;
-    }
-}
 
 * {
     margin: 0;
     padding: 0;
     outline: 0;
+    box-sizing: border-box;
 }
 
 h1,h2,h3,h4,h5,h6,p,span {
     font-family: 'Roboto', sans-serif;
 }
 
-%center {
+.\-, .\|, .\+ {
     display: flex;
+}
+
+.\- { align-items: center; }
+.\| { justify-content: center; }
+
+.\+ {
     align-items: center;
     justify-content: center;
 }
 
-.center { @extend %center; }
-
-[class^='\21'] {
+.\21\2d, .\21\7c, .\21\2b, .\21\5e,
+.\21\7e, .\21\3c, .\21\5f, .\21\3e {
     position: absolute;
+    margin: auto;
 }
+
+.\21\2d, .\21\2b, .\21\7e {
+    right: 0;
+    left: 0;
+}
+
+.\21\7c, .\21\2b, .\21\7e {
+    top: 0;
+    bottom: 0;
+}
+
+.\21\3c {
+    left: 0;
+}
+
+.\21\5e {
+    top: 0;
+}
+
+.\21\3e {
+    right: 0;
+}
+
+.\21\5f {
+    bottom: 0;
+}
+
+.push-right { float: right; }
+.push-left { float: left; }
 
 @mixin layout($size) {
     @for $i from 1 through $size {
@@ -52,44 +81,79 @@ h1,h2,h3,h4,h5,h6,p,span {
         }
     }
 
-    .cols {
+    cols {
         grid-template-columns: repeat($size, auto);
-        width: 100%;
+        height: 100%;
     }
 
-    .rows {
+    rows {
         grid-template-rows: repeat($size, auto);
-        height: 100%;
+        width: 100%;
+        height: auto;
     }
 
     @for $num from 1 through $size {
         @for $i from 2 through $size {
-            @if $num != $i {
-                .cols .col-#{$num}.col-#{$i} {
-                    --col: 1 / calc(1 + #{$i});
-                }
-
-                .cols .col-#{$num}.col-end {
-                    --col: calc((#{$num} - #{$size}) + #{$size}) / calc(#{$size} + 1);
+            @if $num != $i and $i < $num {
+                cols .col-#{$i}.col-#{$num} {
+                    --col: #{$i} / calc(1 + #{$num});
                 }
             }
         }
+        cols .col-#{$num}.col-end {
+            --col: calc((#{$num} - #{$size}) + #{$size}) / calc(#{$size} + 1);
+        }
+    }
+
+    .col-1.col-2 {
+        --col: 1 / calc(3);
+    }
+
+    $half: ($size / 2) + 1;
+    $third: ($size / 3) + 1;
+
+    .col-half {
+        --col: 1 / #{$half};
+    }
+
+    .row-half {
+        --row: 1 / #{$half};
+    }
+
+    .row-half-middle {
+        --row: #{$half} / #{$size + 1};
+    }
+
+    .col-half-middle {
+        --col: #{$half} / #{$size + 1};
+    }
+
+    .col-third {
+        --col: 1 / #{$third};
+    }
+
+    .row-third {
+        --row: 1 / #{$third};
     }
 
     .col-end {
         --col: #{$size};
     }
+
+    .row-end {
+        --row: #{$size};
+    }
 }
 
-@media screen and (max-width: 700px) {
-    @include layout($size: 6);
-}
+// @media screen and (max-width: 700px) {
+//     @include layout($size: 6);
+// }
 
 @media screen and (min-width: 700px) {
     @include layout($size: 12);
 }
 
-.cols, .rows {
+cols, rows {
     display: grid;
 }
 
@@ -101,37 +165,10 @@ h1,h2,h3,h4,h5,h6,p,span {
     grid-row: var(--row);
 }
 
-%button {
-    --size: .5em 1em;
-    @extend %center;
-
-    padding: var(--size);
-    outline: 0;
-    border: 0;
-    text-transform: uppercase;
-    color: #000;
-    background: #fff;
-    border-radius: 2px;
-    font: 500 10px 'Roboto', sans-serif;
-    letter-spacing: .5px;
-    cursor: pointer;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, .1);
-
-    &:hover {
-        opacity: .8;
-    }
+.text-center {
+    text-align: center;
 }
 
-.button-sm {
-    @extend %button;
-}
-
-.button-md {
-    --size: 1em 2em;
-    @extend %button;
-}
-
-.button-lg {
-    --size: 1em 5em;
-    @extend %button;
+.relative {
+    position: relative
 }
